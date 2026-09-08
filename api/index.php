@@ -32,6 +32,9 @@ if (empty($_ENV['APP_KEY']) && empty($_SERVER['APP_KEY'])) {
     $_SERVER['APP_KEY'] = $_ENV['APP_KEY'];
     putenv('APP_KEY=' . $_ENV['APP_KEY']);
 }
+$_ENV['APP_DEBUG'] = 'true';
+$_SERVER['APP_DEBUG'] = 'true';
+putenv('APP_DEBUG=true');
 
 define('LARAVEL_START', microtime(true));
 
