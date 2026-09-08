@@ -32,6 +32,15 @@ if (empty($_ENV['APP_KEY']) && empty($_SERVER['APP_KEY'])) {
     $_SERVER['APP_KEY'] = $_ENV['APP_KEY'];
     putenv('APP_KEY=' . $_ENV['APP_KEY']);
 }
+$_ENV['CACHE_STORE'] = 'array';
+$_ENV['CACHE_DRIVER'] = 'array';
+$_ENV['SESSION_DRIVER'] = 'cookie';
+$_SERVER['CACHE_STORE'] = 'array';
+$_SERVER['CACHE_DRIVER'] = 'array';
+$_SERVER['SESSION_DRIVER'] = 'cookie';
+putenv('CACHE_STORE=array');
+putenv('CACHE_DRIVER=array');
+putenv('SESSION_DRIVER=cookie');
 $_ENV['APP_DEBUG'] = 'true';
 $_SERVER['APP_DEBUG'] = 'true';
 putenv('APP_DEBUG=true');
