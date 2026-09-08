@@ -45,17 +45,15 @@ $app = require_once __DIR__ . '/../bootstrap/app.php';
 // Override storage path to writable /tmp/storage
 $app->useStoragePath('/tmp/storage');
 
-// Run migrations on fresh SQLite database
-if ($isNewDb) {
-    try {
-        $kernel = $app->make(\Illuminate\Contracts\Console\Kernel::class);
-        $kernel->bootstrap();
-        Artisan::call('migrate', ['--force' => true]);
-    } catch (\Throwable $e) {
-        // Silently continue if migrations fail or are already run
-    }
-}
-
 // Handle request
-$app->handleRequest(Request::capture());
+try {
+    $app->handleRequest(Request::capture());
+} catch (\Throwable $e) {
+    http_response_code(500);
+    header('Content-Type: text/html');
+    echo '<h1>Server Error (500)</h1>';
+    echo '<p><strong>Message:</strong> ' . htmlspecialchars($e->getMessage()) . '</p>';
+    echo '<p><strong>File:</strong> ' . htmlspecialchars($e->getFile()) . ':' . $e->getLine() . '</p>';
+    echo '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
+}
 
