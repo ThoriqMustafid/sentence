@@ -70,19 +70,6 @@ $app = require_once __DIR__ . '/../bootstrap/app.php';
 // Override storage path to writable /tmp/storage
 $app->useStoragePath('/tmp/storage');
 
-// Vercel can boot with a cached configuration created before its runtime
-// environment variables are available. Explicitly set the serverless-safe
-// drivers after configuration has loaded so managers never resolve an empty
-// driver name (which results in Manager::createDriver() being called without
-// its required argument).
-$app['config']->set([
-    'cache.default' => 'array',
-    'session.driver' => 'cookie',
-    'queue.default' => 'sync',
-    'filesystems.default' => 'local',
-    'database.default' => 'sqlite',
-]);
-
 // Handle request
 try {
     $app->handleRequest(Request::capture());
