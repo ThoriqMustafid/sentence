@@ -32,6 +32,8 @@
     "CACHE_DRIVER": "array",
     "LOG_CHANNEL": "stderr",
     "SESSION_DRIVER": "cookie",
+    "QUEUE_CONNECTION": "sync",
+    "FILESYSTEM_DISK": "local",
     "DB_CONNECTION": "sqlite",
     "DB_DATABASE": "/tmp/database.sqlite"
   }

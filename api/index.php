@@ -32,15 +32,26 @@ if (empty($_ENV['APP_KEY']) && empty($_SERVER['APP_KEY'])) {
     $_SERVER['APP_KEY'] = $_ENV['APP_KEY'];
     putenv('APP_KEY=' . $_ENV['APP_KEY']);
 }
-$_ENV['CACHE_STORE'] = 'array';
-$_ENV['CACHE_DRIVER'] = 'array';
-$_ENV['SESSION_DRIVER'] = 'cookie';
-$_SERVER['CACHE_STORE'] = 'array';
-$_SERVER['CACHE_DRIVER'] = 'array';
-$_SERVER['SESSION_DRIVER'] = 'cookie';
-putenv('CACHE_STORE=array');
-putenv('CACHE_DRIVER=array');
-putenv('SESSION_DRIVER=cookie');
+// Sanitize and set serverless environment variables
+$driverDefaults = [
+    'SESSION_DRIVER' => 'cookie',
+    'CACHE_STORE' => 'array',
+    'CACHE_DRIVER' => 'array',
+    'QUEUE_CONNECTION' => 'sync',
+    'DB_CONNECTION' => 'sqlite',
+    'FILESYSTEM_DISK' => 'local',
+];
+
+foreach ($driverDefaults as $var => $defaultVal) {
+    if (empty($_ENV[$var])) {
+        $_ENV[$var] = $defaultVal;
+    }
+    if (empty($_SERVER[$var])) {
+        $_SERVER[$var] = $defaultVal;
+    }
+    putenv("{$var}={$defaultVal}");
+}
+
 $_ENV['APP_DEBUG'] = 'true';
 $_SERVER['APP_DEBUG'] = 'true';
 putenv('APP_DEBUG=true');
