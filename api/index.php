@@ -49,12 +49,14 @@ foreach ($driverDefaults as $var => $defaultVal) {
     if (empty($_SERVER[$var])) {
         $_SERVER[$var] = $defaultVal;
     }
-    putenv("{$var}={$defaultVal}");
+    if (getenv($var) === false || getenv($var) === '') {
+        putenv("{$var}={$defaultVal}");
+    }
 }
 
-$_ENV['APP_DEBUG'] = 'true';
-$_SERVER['APP_DEBUG'] = 'true';
-putenv('APP_DEBUG=true');
+$_ENV['APP_DEBUG'] = 'false';
+$_SERVER['APP_DEBUG'] = 'false';
+putenv('APP_DEBUG=false');
 
 define('LARAVEL_START', microtime(true));
 
@@ -68,15 +70,24 @@ $app = require_once __DIR__ . '/../bootstrap/app.php';
 // Override storage path to writable /tmp/storage
 $app->useStoragePath('/tmp/storage');
 
+// Vercel can boot with a cached configuration created before its runtime
+// environment variables are available. Explicitly set the serverless-safe
+// drivers after configuration has loaded so managers never resolve an empty
+// driver name (which results in Manager::createDriver() being called without
+// its required argument).
+$app['config']->set([
+    'cache.default' => 'array',
+    'session.driver' => 'cookie',
+    'queue.default' => 'sync',
+    'filesystems.default' => 'local',
+    'database.default' => 'sqlite',
+]);
+
 // Handle request
 try {
     $app->handleRequest(Request::capture());
 } catch (\Throwable $e) {
     http_response_code(500);
-    header('Content-Type: text/html');
-    echo '<h1>Server Error (500)</h1>';
-    echo '<p><strong>Message:</strong> ' . htmlspecialchars($e->getMessage()) . '</p>';
-    echo '<p><strong>File:</strong> ' . htmlspecialchars($e->getFile()) . ':' . $e->getLine() . '</p>';
-    echo '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
+    header('Content-Type: application/json');
+    echo json_encode(['message' => 'Internal Server Error']);
 }
-
